@@ -1,4 +1,4 @@
-# mintic-base
+# Mineria-de-datos
 
 Curso de Minería de Datos
 
