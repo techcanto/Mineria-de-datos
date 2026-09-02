@@ -2,35 +2,46 @@
 
 import pandas as pd
 
-# data:Dataframe de pandas
-# columns: lista de nombres de las columnas a revisar (pasar solo columnas numericas)
+# data:         Dataframe de pandas
+# columns:      lista de strings de nombres de las columnas a revisar (pasar solo columnas numericas)
 
 def impute_missing(data, strategy="mean", columns=None):
         booleanosData = [_ for _ in data.isna().any()]
         if any(booleanosData):
-                #columnas = list(data.columns)
+                if columns == None:
+                        columnas = list(data.columns)
+                else:
+                        columnas = columns
+
+                
                 resultado = data.copy()
+                numFilas = len(resultado[columnas].values)
 
                 if strategy == "mean":
-                        for columna in columns:
-                                resultado[columna] = resultado[columna].fillna(resultado[columna].mean())
-                                #print("Se aplicó la media a las columnas faltantes")
+                        for columna in columnas:
+                                #suma = sum(resultado[columna].values)
+                                suma = resultado[columna].sum()
+                                cantidad = resultado[columna].count()
+                                media = suma / cantidad
+                                resultado[columna] = resultado[columna].fillna(media)
+                                #resultado[columna] = resultado[columna].fillna(resultado[columna].mean())
+
                 elif strategy == "median":
-                        for columna in columns:
-                                resultado[columna] = resultado[columna].fillna(resultado[columna].median())
+                        for columna in columnas:
+                                resultado_ordenado = resultado.sort_values(by=f"{columna}", ascending=True)
+                                valor_medio = resultado_ordenado.iloc[numFilas // 2][f"{columna}"]
+                                resultado[columna] = resultado[columna].fillna(valor_medio)
                                 #print("Se aplicó la mediana a las columnas faltantes")
+
                 elif strategy == "mode":
-                        for columna in columns:
-                                resultado[columna] = resultado[columna].fillna(resultado[columna].mode()[0])
+                        for columna in columnas:
+                                conteos = resultado[f"{columna}"].value_counts()
+                                moda = conteos.idxmax()
+                                resultado[columna] = resultado[columna].fillna(moda)
                                 #print("Se aplicó la moda a las columnas faltantes")
                 return resultado
         else:
                 print("No hay valores NAN")
-
-
-
-
-
 
 
 
