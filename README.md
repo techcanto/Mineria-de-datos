@@ -46,7 +46,7 @@ Cada subcarpeta dentro de `Mineria-de-datos/` es un subpaquete de Python corresp
 
 ## Clonar el repositorio
 
-Este es un repositorio privado. Para clonarlo, solicita acceso al equipo del curso y luego ejecuta:
+Ejecuta:
 
 ```bash
 git clone https://github.com/techcanto/Mineria-de-datos.git
