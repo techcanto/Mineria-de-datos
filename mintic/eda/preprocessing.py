@@ -51,6 +51,57 @@ def impute_missing(data, strategy="mean", columns=None):
 # method: es el método estadístico a utilizar ('iqr' o 'zscore')
 # threshold: es el factor de escala o umbral para definir un valor atípico (por ejemplo 1.5 o 3.0)
 
-def detect_outliers(data, method='iqr', threshold=1.5):
-    pass # Regresa Un DataFrame de booleanos (True/False) indicando la ubicación de los outliers
+# z = (x - media) / desvest
 
+# IQR = Q3 − Q1 (25% - 75%)
+# Outliers con IQR:
+# - Límite inferior: Q1 - threshold*IQR
+# - Límite superior: Q3 + threshold*IQR
+
+def detect_outliers(data, method='iqr', threshold=1.5):
+    
+    resultado = data.copy()
+    data_numericos = resultado.select_dtypes(include="number")
+    columnas = list(data_numericos.columns)
+    
+    if method == "iqr":
+        for columna in columnas:
+
+            cuartiles = data_numericos[columna].quantile([0.25, 0.75])
+            Q1, Q3 = cuartiles[0.25], cuartiles[0.75]
+            IQR = Q3 - Q1
+
+            limite_inferior = Q1 - threshold * IQR
+            limite_superior = Q3 + threshold * IQR
+
+            outliers = (data_numericos[columna] < limite_inferior) | (data_numericos[columna] > limite_superior)
+
+            resultado[columna] = outliers
+
+
+
+    elif method == "zscore":
+        for columna in columnas:
+
+            suma = data_numericos[columna].sum()
+            cantidad = data_numericos[columna].count()
+            media = suma / cantidad
+            desvest = data_numericos[columna].std()
+
+            zscore = (data_numericos[columna] - media) / desvest
+            outlier = zscore.abs() > threshold
+
+            resultado[columna] = outlier
+              
+
+
+    # Regresa Un DataFrame de booleanos True si ese dato es un outlier, False si no es un outlier
+    return resultado[columnas]
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------
