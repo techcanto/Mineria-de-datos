@@ -1,6 +1,8 @@
 # Código para poner las funciones de preprocesamiento
 
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # data:         Dataframe de pandas
 # columns:      lista de strings de nombres de las columnas a revisar (pasar solo columnas numericas)
