@@ -105,3 +105,71 @@ def detect_outliers(data, method='iqr', threshold=1.5):
 
 
 #-----------------------------------------------------------------------------
+# Procesa los valores atípicos detectados en el DataFrame, permitiendo eliminarlos o recortarlos según la acción indicada.
+
+def handle_outliers(data, method="iqr", action="trim", threshold=1.5):
+    
+    resultado = data.copy()
+    data_numericos = resultado.select_dtypes(include="number")
+    columnas = list(data_numericos.columns)
+
+    if method == "iqr":
+        if action == "trim": # eliminar filas
+            for columna in columnas:
+                cuartiles = data_numericos[columna].quantile([0.25, 0.75])
+                Q1, Q3 = cuartiles[0.25], cuartiles[0.75]
+                IQR = Q3 - Q1
+
+                limite_inferior = Q1 - threshold * IQR
+                limite_superior = Q3 + threshold * IQR
+                
+                resultado = resultado[(resultado[columna] >= limite_inferior) & (resultado[columna] <= limite_superior)]
+
+
+        elif action == "cap": # sustituir por valores limites establecidos
+            for columna in columnas:
+                cuartiles = data_numericos[columna].quantile([0.25, 0.75])
+                Q1, Q3 = cuartiles[0.25], cuartiles[0.75]
+                IQR = Q3 - Q1
+
+                limite_inferior = Q1 - threshold * IQR
+                limite_superior = Q3 + threshold * IQR
+
+                resultado[columna] = resultado[columna].clip(lower=limite_inferior, upper=limite_superior)
+
+
+    
+    elif method == "zscore":
+        if action == "trim":
+            for columna in columnas:
+                suma = data_numericos[columna].sum()
+                cantidad = data_numericos[columna].count()
+                media = suma / cantidad
+                desvest = data_numericos[columna].std()
+
+                zscore = (resultado[columna] - media) / desvest
+                resultado = resultado[zscore.abs() <= threshold]
+
+        elif action == "cap":
+            for columna in columnas:
+                suma = data_numericos[columna].sum()
+                cantidad = data_numericos[columna].count()
+                media = suma / cantidad
+                desvest = data_numericos[columna].std()
+
+                limite_inferior = media - threshold * desvest
+                limite_superior = media + threshold * desvest
+
+                resultado[columna] = resultado[columna].clip(lower=limite_inferior, upper=limite_superior)
+    
+    return resultado.reset_index(drop=True)
+    
+
+
+
+
+#-----------------------------------------------------------------------------
+
+
+
+
