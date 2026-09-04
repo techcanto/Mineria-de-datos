@@ -172,6 +172,30 @@ def handle_outliers(data, method="iqr", action="trim", threshold=1.5):
 
 #-----------------------------------------------------------------------------
 
+# Genera una representación visual que muestra la cantidad o proporción de valores faltantes por columna en el DataFrame.
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def plot_missing(data):
+    # Calcular datos faltantes
+    nuevo_df = data.isna()
+    promedio = (nuevo_df.sum() / len(data)) * 100
+
+    # Transformarlos en algo graficable
+    serie = promedio[promedio > 0]
+    serie = serie.sort_values(ascending=False)
+
+    # Graficarlos
+    plt.figure(figsize=(10, 5))
+    sns.barplot(x=serie.index, y=serie.values)
+    plt.title("Gráfica de valores faltantes")
+    plt.xlabel("Columna")
+    plt.ylabel(" % e valores faltantes")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
+
 
 
 
