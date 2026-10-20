@@ -109,3 +109,25 @@ def kmeans_fit(kmeans, verbose=True):
     kmeans["centroides"] = centroides
     kmeans["etiquetas"] = etiquetas
     return kmeans
+
+
+
+
+# métrica para evaluar que tan compactos quedaron los clusters
+def inertia(kmeans):
+
+    # recuperar los datos del diccionario
+    X = kmeans["data"]
+    centroides = kmeans["centroides"]
+    etiquetas = kmeans["etiquetas"]
+    
+    if etiquetas is None:
+        raise ValueError("Debes ejecutar kmeans_fit primero")
+
+    # para cada punto suma la distancia al cuadrado entre el punto y su centroide asignado
+    total = 0.0                                                     # acumulador
+    for i, punto in enumerate(X):                                   # recorre cada fila con su indice
+        c = centroides[etiquetas[i]]                                # devuelve la fila etiquetas[i] de centroides
+        total += euclidean_distance(punto, c) ** 2
+    
+    return total
