@@ -2,6 +2,8 @@ import math as m
 import numpy as np
 import pandas as pd
 import random as r
+import matplotlib.pyplot as plt
+
 
 def euclidean_distance(point1, point2):
 
@@ -131,3 +133,40 @@ def inertia(kmeans):
         total += euclidean_distance(punto, c) ** 2
     
     return total
+
+
+
+
+
+
+
+
+
+
+def elbow(data, min=2, max=8, max_iter=1000, tol=0.001, randomstate=None):
+    
+    ks = list(range(min, max + 1)) # generar la lista de valores de k
+    inercias = []                  # para guardar los valores de las inercias
+    
+    for k in ks:
+        # para cada k creamos el modelo
+        km = create_kmeans(
+            data,
+            n_clusters=k,
+            max_iter=max_iter,
+            tol=tol,
+            randomstate=randomstate,
+        )
+        # entrena y no imprime cada iteración (verbose=False)
+        km = kmeans_fit(km, verbose=False)
+        inercias.append(inertia(km))                 # calcula la incercia
+        print(f"k={k} → inercia={inercias[-1]:.4f}")
+    
+    plt.figure(figsize=(8, 5))
+    plt.plot(ks, inercias, marker="o", linewidth=2)
+    plt.title("Método del Codo (Elbow)")
+    plt.xlabel("Número de clusters (k)")
+    plt.ylabel("Inercia")
+    plt.xticks(ks)
+    plt.grid(True, alpha=0.3)
+    plt.show()
